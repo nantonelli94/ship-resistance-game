@@ -1,72 +1,73 @@
 # 🚢 Ship Resistance Game
 
-**Simulador Educativo de Resistencia Longitudinal del Buque y Prevención de Fallos Estructurales**
+**Educational Simulator of Ship Longitudinal Strength and Structural Failure Prevention**
 
 [![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)](https://opensource.org/licenses/MIT)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/Version-1.0-green.svg)]()
 [![Status](https://img.shields.io/badge/Status-Prototype-orange.svg)]()
 
-> Juego educativo de simulación náutica para aprender resistencia longitudinal de la viga buque, prevención de fallos por fluencia/pandeo, y gestión de estabilidad durante operaciones de carga y descarga.
+> Educational simulation game to learn ship longitudinal strength, prevent yield/buckling failures, and manage stability during loading and unloading operations.
 
 ---
 
-## 📖 Descripción
+## 📖 Description
 
-**Ship Resistance Game** es un videojuego educativo y de simulación sobre la resistencia longitudinal de la viga buque y prevención de fallos por fluencia/pandeo durante operaciones de carga y descarga.
+**Ship Resistance Game** is an educational simulation game about ship longitudinal strength and yield/buckling failure prevention during loading and unloading operations.
 
-El jugador asume el rol de ingeniero naval jefe y debe:
-- Distribuir correctamente la carga entre las bodegas
-- Ajustar el lastre para mantener la estabilidad
-- Mantener los esfuerzos estructurales dentro de límites seguros
-- Navegar en distintos estados de mar sin comprometer la integridad del buque
+The player takes on the role of a chief naval engineer and must:
+- Properly distribute cargo between holds
+- Adjust ballast to maintain stability
+- Keep structural stresses within safe limits
+- Navigate in different sea states without compromising hull integrity
 
-### Características Principales
+### Key Features
 
-- ✅ **Cálculo dinámico** de fuerza cortante V(x) y momento flector M(x)
-- ✅ **Tensiones de flexión** σ = M·y/I_z en cubierta y quilla
-- ✅ **Sistema de alertas** semafórico (Verde/Amarillo/Rojo)
-- ✅ **Estabilidad transversal** con cálculo de GM
-- ✅ **Estados de mar** con amplificación dinámica de momentos
-- ✅ **Visualización gráfica** de diagramas de esfuerzo
-- ✅ **Modos de juego**: Tutorial, Simulador Realista, Casos Históricos
-
----
-
-## 🎮 Modos de Juego
-
-| Modo | Descripción | Objetivo |
-|------|-------------|----------|
-| **Tutorial / Puzle** | Aprendizaje guiado paso a paso | Dominar V(x), M(x), σ(x) |
-| **Simulador Realista** | Experimentación libre | Operaciones seguras eficientes |
-| **Casos Históricos** | Reconstrucción de accidentes | Aprender de errores reales |
+- ✅ **Dynamic calculation** of shear force V(x) and bending moment M(x)
+- ✅ **Bending stresses** σ = M·y/I_z at deck and keel
+- ✅ **Traffic light alert system** (Green/Yellow/Red)
+- ✅ **Transverse stability** with GM calculation
+- ✅ **Sea states** with dynamic moment amplification
+- ✅ **Graphical visualization** of stress diagrams
+- ✅ **Game modes**: Tutorial, Realistic Simulator, Historical Cases
 
 ---
 
-## 📋 Requisitos
+## 🎮 Game Modes
 
-- **Python:** 3.8 o superior
-- **pip:** gestor de paquetes de Python
-- **matplotlib:** para visualización gráfica (opcional pero recomendado)
-- **numpy:** dependencia de matplotlib
+| Mode | Description | Objective |
+|------|-------------|-----------|
+| **Tutorial / Puzzle** | Step-by-step guided learning | Master V(x), M(x), σ(x) |
+| **Realistic Simulator** | Free experimentation | Safe and efficient operations |
+| **Historical Cases** | Reconstruction of real accidents | Learn from actual maritime disasters |
 
-### Sistema Operativo
+---
+
+## 📋 Requirements
+
+- **Python:** 3.8 or higher
+- **pip:** Python package manager
+- **matplotlib:** for graphical visualization (optional but recommended)
+- **numpy:** matplotlib dependency
+- **streamlit:** for the web app interface
+
+### Operating System
 - Windows 10/11 ✅
 - macOS 10.15+ ✅
 - Linux (Ubuntu 20.04+) ✅
 
 ---
 
-## 🛠️ Instalación
+## 🛠️ Installation
 
-### 1. Clonar el repositorio
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/nantonelli94/ship-resistance-game.git
 cd ship-resistance-game
 ```
 
-### 2. Crear entorno virtual (recomendado)
+### 2. Create a virtual environment (recommended)
 
 ```bash
 python -m venv venv
@@ -78,19 +79,28 @@ venv\Scripts\activate
 source venv/bin/activate
 ```
 
-### 3. Instalar dependencias
+### 3. Install dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-**Dependencias:**
+**Dependencies:**
 ```
 matplotlib>=3.5.0
 numpy>=1.21.0
+streamlit>=1.20.0
+plotly>=5.10.0
+pandas>=1.5.0
 ```
 
-### 4. Ejecutar el simulador
+### 4. Run the Streamlit app
+
+```bash
+streamlit run app.py
+```
+
+Or run the CLI prototype:
 
 ```bash
 python prototypes/ship_simulator.py
@@ -98,63 +108,29 @@ python prototypes/ship_simulator.py
 
 ---
 
-## 🚀 Uso Rápido
+## 🚀 Quick Start
 
-### Simulador CLI (Interfaz de Línea de Comandos)
+### Streamlit Web App
 
 ```bash
-$ python prototypes/ship_simulator.py
-
-======================================================================
-  SHIP RESISTANCE GAME v1.0
-  Simulador Educativo de Resistencia Longitudinal del Buque
-======================================================================
-
-  Buque: MV Containership-200
-  Eslota: 200 m | Manga: 32 m | Calado: 10 m
-  Desplazamiento: 441.0 MN
-
-----------------------------------------
-  MENÚ PRINCIPAL
-----------------------------------------
-  1. Ver configuración del buque
-  2. Modificar carga por sección
-  3. Modificar lastre
-  4. Ejecutar simulación
-  5. Cambiar estado de mar
-  6. Restablecer cargas
-  0. Salir
-
-  Opción: 4
-
-======================================================================
-  ESTADO GENERAL: VERDE
-======================================================================
-
-  Tensiones máximas:
-    Posición: 100.0 m desde proa
-    Valor:    125.50 MPa
-    Límite:   156.67 MPa
-    Factor de seguridad: 1.88
-
-  Balance de fuerzas:
-    Peso total:  430500.0 kN
-    Empuje:       430500.0 kN
-    Diferencia:   0.0 kN
-
-  Estabilidad:
-    GM estimado: 0.452 m
+$ streamlit run app.py
 ```
 
-### API de Python
+The app opens in your browser with:
+- **Left sidebar:** controls to adjust cargo/ballast, select ship and sea state
+- **Main panel:** interactive results with status indicators, metrics, and stress diagrams
+- **Interactive Plotly charts** showing V(x), M(x), and σ(x)
+- **Stability analysis** with IMO criteria verification
+
+### Python API
 
 ```python
 from src.core.physics_engine import PhysicsEngine
 from src.models.ship_config import ShipConfig
 
-# Crear configuración del buque
+# Create ship configuration
 ship = ShipConfig(
-    name="Mi Buque",
+    name="My Ship",
     length_overall=200.0,
     beam=32.0,
     depth=18.0,
@@ -165,34 +141,34 @@ ship = ShipConfig(
     y_keel=-9.0,
 )
 
-# Añadir secciones...
+# Add sections...
 
-# Crear motor de física
+# Create physics engine
 engine = PhysicsEngine(ship)
 
-# Ejecutar simulación
+# Run simulation
 result = engine.compute_shear_and_moment()
 
-print(f"Estado: {result.status}")
-print(f"Tensión máxima: {result.max_stress/1e6:.1f} MPa")
+print(f"Status: {result.status}")
+print(f"Max stress: {result.max_stress/1e6:.1f} MPa")
 print(f"GM: {result.gm_estimate:.3f} m")
 ```
 
 ---
 
-## 📚 Documentación
+## 📚 Documentation
 
-| Documento | Descripción |
-|-----------|-------------|
-| [GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) | Diseño del juego: mecánicas, modos, progresión |
-| [MATHEMATICAL_MODEL.md](docs/MATHEMATICAL_MODEL.md) | Modelo matemático y física implementada |
-| [SYSTEM_ARCHITECTURE.md](docs/SYSTEM_ARCHITECTURE.md) | Arquitectura del sistema y módulos |
+| Document | Description |
+|----------|-------------|
+| [GAME_DESIGN_DOCUMENT.md](docs/GAME_DESIGN_DOCUMENT.md) | Game design: mechanics, modes, progression |
+| [MATHEMATICAL_MODEL.md](docs/MATHEMATICAL_MODEL.md) | Mathematical model and physics implemented |
+| [SYSTEM_ARCHITECTURE.md](docs/SYSTEM_ARCHITECTURE.md) | System architecture and modules |
 
 ---
 
 ## 🧪 Tests
 
-Ejecutar pruebas unitarias:
+Run unit tests:
 
 ```bash
 python -m pytest tests/ -v
@@ -200,75 +176,76 @@ python -m pytest tests/ -v
 
 ---
 
-## 🤝 Contribuir
+## 🤝 Contributing
 
-¡Las contribuciones son bienvenidas! Para contribuir:
+Contributions are welcome! To contribute:
 
-1. **Fork** el repositorio
-2. Crea una rama para tu feature (`git checkout -b feature/nueva-caracteristica`)
-3. **Commit** tus cambios (`git commit -am 'Añade nueva característica'`)
-4. **Push** a la rama (`git push origin feature/nueva-caracteristica`)
-5. Abre un **Pull Request**
+1. **Fork** the repository
+2. Create a feature branch (`git checkout -b feature/new-feature`)
+3. **Commit** your changes (`git commit -am 'Add new feature'`)
+4. **Push** to the branch (`git push origin feature/new-feature`)
+5. Open a **Pull Request**
 
-### Guía de Estilo
-
-- Código en **PEP 8** (Python)
-- Comentarios en español o inglés
-- Docstrings en formato Google
-- Tests obligatorios para nuevas funcionalidades
+### Style Guide
+- Code in **PEP 8** (Python)
+- Comments in English or Spanish
+- Google-style docstrings
+- Tests mandatory for new features
 
 ---
 
-## 📁 Estructura del Proyecto
+## 📁 Project Structure
 
 ```
 ship-resistance-game/
-├── docs/                        # Documentación
+├── app.py                       # Streamlit web app (NEW)
+├── docs/                        # Documentation
 │   ├── GAME_DESIGN_DOCUMENT.md
 │   ├── MATHEMATICAL_MODEL.md
 │   └── SYSTEM_ARCHITECTURE.md
-├── src/                         # Código fuente
-│   ├── core/                    # Motor de simulación
-│   ├── models/                  # Modelos de datos
-│   ├── ui/                      # Interfaz de usuario
-│   ├── modes/                   # Modos de juego
-│   ├── data/                    # Datos y presets
-│   └── utils/                   # Utilidades
-├── prototypes/                  # Prototipos ejecutables
+├── src/                         # Source code
+│   ├── core/                    # Simulation engine
+│   ├── models/                  # Data models
+│   ├── ui/                      # User interface (CLI + plotter)
+│   ├── modes/                   # Game modes
+│   ├── data/                    # Data and presets
+│   └── utils/                   # Utilities
+├── prototypes/                  # Executable prototypes
 │   └── ship_simulator.py
-├── tests/                       # Pruebas unitarias
-├── assets/                      # Recursos gráficos
-├── requirements.txt             # Dependencias
+├── tests/                       # Unit tests
+├── assets/                      # Graphical resources
+├── requirements.txt             # Dependencies
 ├── .gitignore
 └── README.md
 ```
 
 ---
 
-## 📝 Licencia
+## 📝 License
 
-Este proyecto está licenciado bajo **MIT License** — ver [LICENSE](LICENSE) para más detalles.
+This project is licensed under the **MIT License** — see [LICENSE](LICENSE) for details.
 
 ---
 
-## 👤 Autor
+## 👤 Author
 
 **Nicolás Antonelli**
 - GitHub: [@nantonelli94](https://github.com/nantonelli94)
-- Arquitectura Naval — Teoría del Buque II
+- UTN FRMDP — Marine Engineering Professor & Researcher
+- PhD Candidate (UNMDP/CONICET) — Ship Hydrodynamics
 
 ---
 
-## 🙏 Agradecimientos
+## 🙏 Acknowledgments
 
-- Basado en los fundamentos de **Teoría del Buque II: Propulsión**
-- Referencias: ITTC, Lloyd's Register, OMI/IMO
-- A la comunidad de arquitectura naval por el conocimiento compartido
+- Based on the fundamentals of **Ship Theory II: Propulsion**
+- References: ITTC, Lloyd's Register, IMO
+- To the naval architecture community for shared knowledge
 
 ---
 
 <div align="center">
 
-⚓ **¡Buena navegación, ingeniero!** ⚓
+⚓ **Fair winds, engineer!** ⚓
 
 </div>

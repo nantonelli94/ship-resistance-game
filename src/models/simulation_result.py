@@ -1,9 +1,8 @@
 """
-simulation_result.py — Resultados de simulación
-================================================
+simulation_result.py — Simulation results
+===========================================
 
-Define las estructuras de datos para almacenar los resultados
-del cálculo de esfuerzos y tensiones.
+Defines data structures for storing stress and load calculation results.
 """
 
 from __future__ import annotations
@@ -14,7 +13,7 @@ from typing import List
 
 @dataclass
 class StressResult:
-    """Resultado de tensiones en una sección."""
+    """Stress result at a section."""
     x: float
     shear_force: float
     bending_moment: float
@@ -26,7 +25,7 @@ class StressResult:
 
 @dataclass
 class SimulationResult:
-    """Resultado completo de la simulación."""
+    """Complete simulation result."""
     sections: List[StressResult]
     max_stress: float
     max_stress_position: float

@@ -1,16 +1,15 @@
 """
-constantes.py — Constantes físicas y parámetros de materiales
-=============================================================
+constants.py — Physical constants and material properties
+=========================================================
 
-Define todas las constantes utilizadas en el simulador de resistencia
-longitudinal del buque: propiedades del acero naval, factores de
-seguridad y coeficientes de estado de mar.
+Defines all constants used for longitudinal ship strength simulation:
+naval steel properties, safety factors, and sea state coefficients.
 """
 
 from __future__ import annotations
 
 # =============================================================================
-# PROPIEDADES DEL ACERO NAVAL (AH36)
+# NAVAL STEEL PROPERTIES (AH36)
 # =============================================================================
 
 STEEL_YIELD_STRESS: float = 235.0e6       # Pa (235 MPa)
@@ -20,60 +19,60 @@ STEEL_DENSITY: float = 7850.0              # kg/m^3
 STEEL_POISSON_RATIO: float = 0.30
 
 # =============================================================================
-# FACTORES DE SEGURIDAD
+# SAFETY FACTORS
 # =============================================================================
 
-SAFETY_FACTOR_YIELD: float = 1.5           # Para fluencia
-SAFETY_FACTOR_BUCKLING: float = 2.0        # Para pandeo
-SAFETY_FACTOR_FATIGUE: float = 1.2          # Para fatiga
+SAFETY_FACTOR_YIELD: float = 1.5           # For yield
+SAFETY_FACTOR_BUCKLING: float = 2.0        # For buckling
+SAFETY_FACTOR_FATIGUE: float = 1.2          # For fatigue
 
-# Tensión admisible derivada
+# Derived allowable stress
 MAX_ALLOWED_STRESS: float = STEEL_YIELD_STRESS / SAFETY_FACTOR_YIELD
 
 # =============================================================================
-# ESTADOS DE MAR (coeficientes de amplificación dinámica)
+# SEA STATES (dynamic amplification factors — Douglas scale)
 # =============================================================================
 
 SEA_STATE_FACTORS: dict[int, float] = {
-    0: 1.00,   # Calma
-    1: 1.05,   # Marejada ligera
-    2: 1.10,   # Marejada moderada
-    3: 1.20,   # Marejada fuerte
-    4: 1.35,   # Mar gruesa
-    5: 1.50,   # Mar muy gruesa (tormenta)
+    0: 1.00,   # Calm
+    1: 1.05,   # Slight swell
+    2: 1.10,   # Moderate swell
+    3: 1.20,   # Rough sea
+    4: 1.35,   # Very rough sea
+    5: 1.50,   # High sea (storm)
 }
 
 SEA_STATE_DESCRIPTIONS: dict[int, str] = {
-    0: "Calma",
-    1: "Marejada ligera",
-    2: "Marejada moderada",
-    3: "Marejada fuerte",
-    4: "Mar gruesa",
-    5: "Mar muy gruesa (tormenta)",
+    0: "Calm",
+    1: "Slight swell",
+    2: "Moderate swell",
+    3: "Rough sea",
+    4: "Very rough sea",
+    5: "High sea (storm)",
 }
 
 # =============================================================================
-# CONSTANTES FÍSICAS
+# PHYSICAL CONSTANTS
 # =============================================================================
 
 GRAVITY: float = 9.81                     # m/s^2
-WATER_DENSITY: float = 1025.0             # kg/m^3 (agua de mar)
+WATER_DENSITY: float = 1025.0             # kg/m^3 (seawater)
 AIR_DENSITY: float = 1.225                # kg/m^3
 
 # =============================================================================
-# LÍMITES DE ESTABILIDAD
+# STABILITY LIMITS
 # =============================================================================
 
-GM_MIN_GREEN: float = 0.30                # m — estable
-GM_MIN_YELLOW: float = 0.15               # m — margen reducido
-GM_MIN_RED: float = 0.0                   # m — inestable
+GM_MIN_GREEN: float = 0.30                # m — stable
+GM_MIN_YELLOW: float = 0.15               # m — reduced margin
+GM_MIN_RED: float = 0.0                   # m — unstable
 
 # =============================================================================
-# COLORES SEMAFÓRICOS (ANSI)
+# TRAFFIC LIGHT COLORS (ANSI)
 # =============================================================================
 
 class Colors:
-    """Códigos de color ANSI para terminal."""
+    """ANSI color codes for terminal output."""
     VERDE = "\033[92m"
     AMARILLO = "\033[93m"
     ROJO = "\033[91m"
@@ -84,5 +83,5 @@ class Colors:
 
     @classmethod
     def colorize(cls, text: str, color: str) -> str:
-        """Aplica color ANSI al texto."""
+        """Apply ANSI color to text."""
         return f"{getattr(cls, color.upper(), '')}{text}{cls.RESET}"

@@ -1,8 +1,8 @@
 """
-ship_config.py — Modelos de configuración del buque
-====================================================
+ship_config.py — Ship configuration models
+============================================
 
-Define las dataclasses para configurar el buque y sus secciones.
+Defines dataclasses for configuring the ship and its sections.
 """
 
 from __future__ import annotations
@@ -13,7 +13,7 @@ from typing import List
 
 @dataclass
 class SectionConfig:
-    """Configuración de una sección del buque."""
+    """Configuration of a ship section."""
     name: str
     length: float
     weight_empty: float
@@ -25,7 +25,7 @@ class SectionConfig:
 
     @property
     def x_center(self) -> float:
-        """Posición del centro de la sección."""
+        """Center position of the section."""
         return self._x_center
 
     @x_center.setter
@@ -34,21 +34,21 @@ class SectionConfig:
 
     @property
     def total_weight(self) -> float:
-        """Peso total de la sección (estructura + carga)."""
+        """Total weight of the section (structure + load)."""
         return self.weight_empty + abs(self.current_load)
 
     def set_load(self, load: float) -> None:
-        """Establece la carga con validación."""
+        """Set load with validation."""
         if abs(load) > self.capacity:
             raise ValueError(
-                f"Carga {load/1000:.1f} kN excede capacidad {self.capacity/1000:.1f} kN"
+                f"Load {load/1000:.1f} kN exceeds capacity {self.capacity/1000:.1f} kN"
             )
         self.current_load = load
 
 
 @dataclass
 class ShipConfig:
-    """Configuración completa del buque."""
+    """Complete ship configuration."""
     name: str
     length_overall: float
     beam: float
