@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ship Resistance Game</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto+Condensed:wght@300;400;700&display=swap');
+
+        :root {
+            --bg-dark: #0a1628;
+            --bg-panel: #111d35;
+            --border-glow: #1a3a5c;
+            --accent-blue: #00d4ff;
+            --accent-orange: #ff8c00;
+            --green: #00ff88;
+            --yellow: #ffdd00;
+            --red: #ff4444;
+            --text-light: #e0e8f0;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Roboto Condensed', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            overflow: hidden;
+            height: 100vh;
+        }
+
+        /* ── Header ─────────────────────────── */
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px 24px;
+            background: linear-gradient(90deg, #0d1f3c 0%, #1a3a5c 50%, #0d1f3c 100%);
+            border-bottom: 2px solid var(--accent-blue);
+            box-shadow: 0 2px 20px rgba(0, 212, 255, 0.2);
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 24px;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--accent-blue), #00ff88);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: none;
+        }
+
+        .logo span { color: var(--accent-orange); -webkit-text-fill-color: var(--accent-orange); }
+
+        .status-bar {
+            display: flex;
+            gap: 20px;
+            align-items: center;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid var(--border-glow);
+            font-size: 13px;
+        }
+
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        .status-dot.green { background: var(--green); box-shadow: 0 0 10px var(--green); }
+        .status-dot.yellow { background: var(--yellow); box-shadow: 0 0 10px var(--yellow); }
+        .status-dot.red { background: var(--red); box-shadow: 0 0 10px var(--red); animation: pulse 0.5s infinite; }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.9); }
+        }
+
+        /* ── Main Layout ────────────────────── */
+        .main-container {
+            display: flex;
+            height: calc(100vh - 56px);
+        }
+
+        .sidebar {
+            width: 280px;
+            background: var(--bg-panel);
+            border-right: 1px solid var(--border-glow);
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--accent-blue) transparent;
+        }
+
+        .panel-section {
+            padding: 16px;
+            border-bottom: 1px solid var(--border-glow);
+        }
+
+        .panel-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--accent-blue);
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .panel-title::before {
+            content: '';
+            display: block;
+            width: 3px;
+            height: 14px;
+            background: var(--accent-blue);
+            border-radius: 2px;
+        }
+
+        /* ── Ship Selector ──────────────────── */
+        .ship-selector {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .ship-btn {
+            padding: 10px 14px;
+            border: 1px solid var(--border-glow);
+            border-radius: 8px;
+            background: rgba(0, 212, 255, 0.05);
+            color: var(--text-light);
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 13px;
+            text-align: left;
+        }
+
+        .ship-btn:hover {
+            background: rgba(0, 212, 255, 0.15);
+            border-color: var(--accent-blue);
+            transform: translateX(4px);
+        }
+
+        .ship-btn.active {
+            background: rgba(0, 212, 255, 0.2);
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 15px rgba(0, 212, 255, 0.3);
+        }
+
+        /* ── Sliders ────────────────────────── */
+        .slider-group {
+            margin-bottom: 12px;
+        }
+
+        .slider-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: #a0b0c0;
+        }
+
+        .slider-label span:last-child {
+            color: var(--accent-blue);
+            font-weight: 700;
+        }
+
+        .slider-container {
+            position: relative;
+            height: 8px;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .slider-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.1s, background 0.3s;
+        }
+
+        .slider-fill.cargo { background: linear-gradient(90deg, #007bff, var(--accent-blue)); }
+        .slider-fill.ballast { background: linear-gradient(90deg, #ff8c00, var(--accent-orange)); }
+
+        .slider-thumb {
+            position: absolute;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: white;
+            box-shadow: 0 0 10px rgba(0, 212, 255, 0.5);
+            cursor: grab;
+            transition: transform 0.1s;
+        }
+
+        .slider-thumb:active { transform: translate(-50%, -50%) scale(1.3); cursor: grabbing; }
+
+        /* ── Sea State ──────────────────────── */
+        .sea-state-display {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+        }
+
+        .sea-state-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .sea-state-info { font-size: 11px; color: #8090a0; }
+
+        /* ── Action Buttons ─────────────────── */
+        .btn {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-bottom: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--accent-blue), #0099cc);
+            color: #000;
+        }
+
+        .btn-primary:hover {
+            box-shadow: 0 0 25px rgba(0, 212, 255, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-light);
+            border: 1px solid var(--border-glow);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        /* ── Canvas Area ────────────────────── */
+        .canvas-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #gameCanvas {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
+
+        /* ── Metrics Overlay ────────────────── */
+        .metrics-overlay {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .metric-card {
+            background: rgba(10, 22, 40, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid var(--border-glow);
+            border-radius: 10px;
+            padding: 10px 16px;
+            min-width: 180px;
+        }
+
+        .metric-label {
+            font-size: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: #8090a0;
+        }
+
+        .metric-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 20px;
+            font-weight: 700;
+        }
+
+        .metric-value.green { color: var(--green); }
+        .metric-value.yellow { color: var(--yellow); }
+        .metric-value.red { color: var(--red); }
+        .metric-value.blue { color: var(--accent-blue); }
+
+        /* ── Alerts ─────────────────────────── */
+        .alert-container {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .alert {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            animation: slideUp 0.3s ease-out;
+            backdrop-filter: blur(10px);
+        }
+
+        .alert-green { background: rgba(0, 255, 136, 0.15); border: 1px solid var(--green); color: var(--green); }
+        .alert-yellow { background: rgba(255, 221, 0, 0.15); border: 1px solid var(--yellow); color: var(--yellow); }
+        .alert-red { background: rgba(255, 68, 68, 0.15); border: 1px solid var(--red); color: var(--red); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ── Game Mode Selector ─────────────── */
+        .mode-selector {
+            display: flex;
+            gap: 4px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 4px;
+            border-radius: 8px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px;
+            border: none;
+            border-radius: 6px;
+            background: transparent;
+            color: #8090a0;
+            font-size: 11px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .mode-btn.active {
+            background: var(--accent-blue);
+            color: #000;
+        }
+
+        /* ── Responsive ─────────────────────── */
+        @media (max-width: 1200px) {
+            .sidebar { width: 240px; }
+            .metrics-overlay { right: 10px; }
+            .metric-card { min-width: 150px; padding: 8px 12px; }
+            .metric-value { font-size: 16px; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+    <div class="logo">⚓ SHIP<span>RESISTANCE</span>GAME</div>
+    <div class="status-bar">
+        <div class="status-indicator">
+            <div class="status-dot green" id="statusDot"></div>
+            <span id="statusText">SYSTEMS OK</span>
+        </div>
+        <div class="status-indicator" style="font-family: 'Orbitron', monospace;">
+            GM: <span id="gmDisplay" style="color: var(--green);">0.452 m</span>
+        </div>
+    </div>
+</div>
+
+<!-- Main Container -->
+<div class="main-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <!-- Game Mode -->
+        <div class="panel-section">
+            <div class="panel-title">Game Mode</div>
+            <div class="mode-selector">
+                <button class="mode-btn active" onclick="setMode('free')">FREE PLAY</button>
+                <button class="mode-btn" onclick="setMode('tutorial')">TUTORIAL</button>
+                <button class="mode-btn" onclick="setMode('cases')">CASES</button>
+            </div>
+        </div>
+
+        <!-- Ship Selection -->
+        <div class="panel-section">
+            <div class="panel-title">Select Ship</div>
+            <div class="ship-selector">
+                <button class="ship-btn active" onclick="selectShip('containership')">🚢 Containership 200m</button>
+                <button class="ship-btn" onclick="selectShip('bulk_carrier')">🚢 Bulk Carrier 250m</button>
+                <button class="ship-btn" onclick="selectShip('vlcc_tanker')">🛢️ VLCC Tanker 330m</button>
+            </div>
+        </div>
+
+        <!-- Cargo Loads -->
+        <div class="panel-section">
+            <div class="panel-title">Cargo Sections</div>
+            <div id="cargoSliders"></div>
+        </div>
+
+        <!-- Ballast Tanks -->
+        <div class="panel-section">
+            <div class="panel-title">Ballast Tanks</div>
+            <div id="ballastSliders"></div>
+        </div>
+
+        <!-- Sea State -->
+        <div class="panel-section">
+            <div class="panel-title">Sea State</div>
+            <div class="sea-state-display">
+                <div>
+                    <div class="sea-state-value" id="seaStateValue">0</div>
+                    <div class="sea-state-info" id="seaStateDesc">Calm</div>
+                </div>
+                <input type="range" min="0" max="5" value="0" id="seaStateSlider"
+                       onchange="setSeaState(this.value)" style="flex: 1; margin-left: 16px;">
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="panel-section" style="margin-top: auto;">
+            <button class="btn btn-primary" onclick="runSimulation()">▶ RUN SIMULATION</button>
+            <button class="btn btn-secondary" onclick="resetLoads()">↺ RESET LOADS</button>
+        </div>
+    </div>
+
+    <!-- Canvas Area -->
+    <div class="canvas-area">
+        <canvas id="gameCanvas"></canvas>
+
+        <!-- Metrics Overlay -->
+        <div class="metrics-overlay">
+            <div class="metric-card">
+                <div class="metric-label">Max Stress</div>
+                <div class="metric-value green" id="maxStress">0 MPa</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Max Moment</div>
+                <div class="metric-value blue" id="maxMoment">0 MN·m</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Max Shear</div>
+                <div class="metric-value blue" id="maxShear">0 kN</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Safety Factor</div>
+                <div class="metric-value green" id="safetyFactor">—</div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="alert-container" id="alertContainer"></div>
+    </div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════
+// GAME STATE
+// ═══════════════════════════════════════════════
+
+const STATE = {
+    mode: 'free',
+    shipType: 'containership',
+    seaState: 0,
+    simulationRun: false,
+    animFrame: 0,
+    waves: [],
+};
+
+// Ship presets
+const SHIP_PRESETS = {
+    containership: {
+        name: 'Containership-200',
+        length: 200, beam: 32, depth: 18, draft: 10,
+        sections: [
+            { name: 'Bow Peak', length: 20, weight: 5000, cap: 2000, isBallast: false, load: 0 },
+            { name: 'Fwd Cargo 1', length: 20, weight: 8000, cap: 15000, isBallast: false, load: 9000 },
+            { name: 'Fwd Cargo 2', length: 20, weight: 8000, cap: 15000, isBallast: false, load: 9000 },
+            { name: 'Fwd Tank', length: 20, weight: 3000, cap: 8000, isBallast: true, load: 2400 },
+            { name: 'Mid Cargo 1', length: 20, weight: 10000, cap: 20000, isBallast: false, load: 12000 },
+            { name: 'Mid Cargo 2', length: 20, weight: 10000, cap: 20000, isBallast: false, load: 12000 },
+            { name: 'Mid Tank', length: 20, weight: 2000, cap: 5000, isBallast: true, load: 1500 },
+            { name: 'Aft Cargo 1', length: 20, weight: 10000, cap: 20000, isBallast: false, load: 12000 },
+            { name: 'Aft Cargo 2', length: 20, weight: 8000, cap: 15000, isBallast: false, load: 9000 },
+            { name: 'Stern Peak', length: 20, weight: 4000, cap: 1500, isBallast: false, load: 0 },
+        ]
+    },
+    bulk_carrier: {
+        name: 'BulkCarrier-250',
+        length: 250, beam: 40, depth: 20, draft: 12,
+        sections: [
+            { name: 'Bow Peak', length: 25, weight: 8000, cap: 3000, isBallast: false, load: 0 },
+            { name: 'Fwd Hold 1', length: 25, weight: 12000, cap: 25000, isBallast: false, load: 15000 },
+            { name: 'Fwd Hold 2', length: 25, weight: 12000, cap: 25000, isBallast: false, load: 15000 },
+            { name: 'Fwd Tank', length: 25, weight: 5000, cap: 15000, isBallast: true, load: 4500 },
+            { name: 'Mid Hold 1', length: 25, weight: 15000, cap: 35000, isBallast: false, load: 21000 },
+            { name: 'Mid Hold 2', length: 25, weight: 15000, cap: 35000, isBallast: false, load: 21000 },
+            { name: 'Mid Tank', length: 25, weight: 3000, cap: 10000, isBallast: true, load: 3000 },
+            { name: 'Aft Hold 1', length: 25, weight: 15000, cap: 35000, isBallast: false, load: 21000 },
+            { name: 'Aft Hold 2', length: 25, weight: 12000, cap: 25000, isBallast: false, load: 15000 },
+            { name: 'Stern Peak', length: 25, weight: 6000, cap: 2000, isBallast: false, load: 0 },
+        ]
+    },
+    vlcc_tanker: {
+        name: 'VLCC Tanker-330',
+        length: 330, beam: 60, depth: 28, draft: 16,
+        sections: [
+            { name: 'Bow Peak', length: 33, weight: 15000, cap: 5000, isBallast: false, load: 0 },
+            { name: 'Fwd Cargo', length: 33, weight: 20000, cap: 30000, isBallast: false, load: 18000 },
+            { name: 'Fwd Tank', length: 33, weight: 8000, cap: 20000, isBallast: true, load: 6000 },
+            { name: 'Mid Cargo 1', length: 33, weight: 25000, cap: 40000, isBallast: false, load: 24000 },
+            { name: 'Mid Cargo 2', length: 33, weight: 25000, cap: 40000, isBallast: false, load: 24000 },
+            { name: 'Mid Cargo 3', length: 33, weight: 25000, cap: 40000, isBallast: false, load: 24000 },
+            { name: 'Mid Tank', length: 33, weight: 5000, cap: 15000, isBallast: true, load: 4500 },
+            { name: 'Aft Cargo', length: 33, weight: 20000, cap: 30000, isBallast: false, load: 18000 },
+            { name: 'Aft Machinery', length: 33, weight: 18000, cap: 10000, isBallast: false, load: 6000 },
+            { name: 'Stern Peak', length: 33, weight: 10000, cap: 3000, isBallast: false, load: 0 },
+        ]
+    }
+};
+
+const SEA_STATES = [
+    { desc: 'Calm', factor: 1.0 },
+    { desc: 'Slight Swell', factor: 1.05 },
+    { desc: 'Moderate', factor: 1.10 },
+    { desc: 'Rough', factor: 1.20 },
+    { desc: 'Very Rough', factor: 1.35 },
+    { desc: 'Storm', factor: 1.50 },
+];
+
+const STEEL_YIELD = 235; // MPa
+const SAFETY_FACTOR = 1.5;
+const MAX_STRESS = STEEL_YIELD / SAFETY_FACTOR; // 156.67 MPa
+const I_ZZ = 8500; // m^4 (simplified)
+const Y_DECK = 8.5;
+const Y_KEEL = -9.0;
+const GM_GREEN = 0.30;
+const GM_YELLOW = 0.15;
+
+// ═══════════════════════════════════════════════
+// PHYSICS ENGINE
+// ═══════════════════════════════════════════════
+
+function computeSimulation(ship) {
+    const sections = ship.sections;
+    const n = sections.length;
+    const seaFactor = SEA_STATES[STATE.seaState].factor;
+
+    // Compute buoyancy distribution
+    let totalWeight = 0;
+    sections.forEach(s => totalWeight += s.weight + s.load);
+
+    const weights = [];
+    for (let i = 0; i < n; i++) {
+        if (n === 1) weights.push(1);
+        else if (i === 0 || i === n - 1) weights.push(0.2);
+        else weights.push(0.6 / (n - 2));
+    }
+    const totalW = weights.reduce((a, b) => a + b, 0);
+
+    const buoyancy = [];
+    for (let i = 0; i < n; i++) {
+        buoyancy.push(totalWeight * weights[i] / totalW);
+    }
+
+    // Compute shear and moment
+    const sectionLen = sections[0].length;
+    let shear = 0;
+    let moment = 0;
+    const results = [];
+    let maxStress = 0, maxStressPos = 0, maxMoment = 0, maxShear = 0;
+
+    for (let i = 0; i < n; i++) {
+        const weight = sections[i].weight + sections[i].load;
+        const netLoad = weight - buoyancy[i];
+        shear -= netLoad * sectionLen;
+        moment = (i === 0) ? shear * sectionLen : moment + shear * sectionLen;
+
+        const momentDyn = moment * seaFactor;
+        const sigmaDeck = (momentDyn * Y_DECK) / I_ZZ / 1e6;
+        const sigmaKeel = Math.abs((momentDyn * Y_KEEL) / I_ZZ / 1e6);
+        const sigmaMax = Math.max(Math.abs(sigmaDeck), sigmaKeel);
+
+        const x = (i + 0.5) * sectionLen;
+
+        let status = 'VERDE';
+        if (sigmaMax > MAX_STRESS) status = 'ROJO';
+        else if (sigmaMax > MAX_STRESS * 0.75) status = 'AMARILLO';
+
+        results.push({ x, shear, moment: momentDyn, stressDeck: sigmaDeck, stressKeel: sigmaKeel, stressMax: sigmaMax, status });
+
+        if (sigmaMax > maxStress) { maxStress = sigmaMax; maxStressPos = x; }
+        if (Math.abs(momentDyn) > Math.abs(maxMoment)) maxMoment = momentDyn;
+        if (Math.abs(shear) > Math.abs(maxShear)) maxShear = shear;
+    }
+
+    // GM estimation
+    const T = ship.draft, B = ship.beam, L = ship.length, D = ship.depth;
+    const KB = T / 2;
+    const I_flota = (L * Math.pow(B, 3)) / 12;
+    const V_disp = L * B * T;
+    const BM = I_flota / V_disp;
+    const KG = 0.62 * D;
+    const GM = Math.max(KB + BM - KG, -0.5);
+
+    let overallStatus = 'VERDE';
+    const warnings = [];
+
+    if (maxStress > MAX_STRESS) {
+        overallStatus = 'ROJO';
+        warnings.push('YIELD FAILURE: Hull stress exceeds steel yield strength!');
+    } else if (maxStress > MAX_STRESS * 0.75) {
+        overallStatus = 'AMARILLO';
+        warnings.push('CAUTION: Stress approaching yield limit');
+    }
+
+    if (GM < GM_YELLOW) {
+        overallStatus = 'ROJO';
+        warnings.push('CAPSIZE RISK: GM critically low — ship will roll over!');
+    } else if (GM < GM_GREEN) {
+        if (overallStatus !== 'ROJO') overallStatus = 'AMARILLO';
+        warnings.push('Low GM: reduced stability');
+    }
+
+    return { sections: results, maxStress, maxStressPos, maxMoment, maxShear, gm: GM, status: overallStatus, warnings };
+}
+
+// ═══════════════════════════════════════════════
+// CANVAS RENDERER
+// ═══════════════════════════════════════════════
+
+const canvas = document.getElementById('gameCanvas');
+const ctx = canvas.getContext('2d');
+
+function resizeCanvas() {
+    const rect = canvas.parentElement.getBoundingClientRect();
+    canvas.width = rect.width * window.devicePixelRatio;
+    canvas.height = rect.height * window.devicePixelRatio;
+    canvas.style.width = rect.width + 'px';
+    canvas.style.height = rect.height + 'px';
+    ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+}
+
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+function render() {
+    const w = canvas.width / window.devicePixelRatio;
+    const h = canvas.height / window.devicePixelRatio;
+
+    ctx.clearRect(0, 0, w, h);
+
+    // Background gradient (sky)
+    const skyGrad = ctx.createLinearGradient(0, 0, 0, h * 0.6);
+    skyGrad.addColorStop(0, '#0a1628');
+    skyGrad.addColorStop(1, '#1a3a5c');
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0, 0, w, h);
+
+    // Stars
+    ctx.fillStyle = 'rgba(255,255,255,0.3)';
+    for (let i = 0; i < 50; i++) {
+        const sx = (Math.sin(i * 137.508) * 0.5 + 0.5) * w;
+        const sy = Math.cos(i * 73.7) * 0.3 * h;
+        ctx.beginPath();
+        ctx.arc(sx, sy, Math.random() * 1.5, 0, Math.PI * 2);
+        ctx.fill();
+    }
+
+    // Water
+    const waterY = h * 0.45;
+    const waterGrad = ctx.createLinearGradient(0, waterY, 0, h);
+    waterGrad.addColorStop(0, '#003366');
+    waterGrad.addColorStop(0.5, '#001a33');
+    waterGrad.addColorStop(1, '#000d1a');
+    ctx.fillStyle = waterGrad;
+    ctx.fillRect(0, waterY, w, h - waterY);
+
+    // Animated waves
+    STATE.animFrame++;
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.3)';
+    ctx.lineWidth = 1.5;
+    for (let layer = 0; layer < 3; layer++) {
+        ctx.beginPath();
+        const yBase = waterY + layer * 15;
+        const amplitude = 3 + STATE.seaState * 3;
+        const speed = 0.02 + layer * 0.01;
+        for (let x = 0; x <= w; x += 4) {
+            const y = yBase + Math.sin(x * 0.015 + STATE.animFrame * speed + layer) * amplitude
+                            + Math.sin(x * 0.008 + STATE.animFrame * speed * 0.7) * amplitude * 0.5;
+            if (x === 0) ctx.moveTo(x, y);
+            else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+    }
+
+    // Draw ship
+    const ship = SHIP_PRESETS[STATE.shipType];
+    const shipPixelLength = Math.min(w * 0.6, 700);
+    const shipPixelWidth = shipPixelLength * (ship.beam / ship.length);
+    const shipX = (w - shipPixelLength) / 2;
+    const shipY = waterY - shipPixelWidth * 0.4 + Math.sin(STATE.animFrame * 0.03) * (2 + STATE.seaState);
+
+    drawShip(ctx, ship, shipX, shipY, shipPixelLength, shipPixelWidth);
+
+    // Draw stress overlay if simulation run
+    if (STATE.simulationRun) {
+        drawStressOverlay(ctx, ship, shipX, shipY, shipPixelLength, shipPixelWidth);
+    }
+
+    // Draw loading indicators on ship
+    drawLoadIndicators(ctx, ship, shipX, shipY, shipPixelLength, shipPixelWidth);
+
+    requestAnimationFrame(render);
+}
+
+function drawShip(ctx, ship, x, y, w, h) {
+    const sections = ship.sections;
+    const secW = w / sections.length;
+
+    // Hull
+    ctx.save();
+    ctx.translate(x, y);
+
+    // Ship body
+    const hullGrad = ctx.createLinearGradient(0, -h/2, 0, h);
+    hullGrad.addColorStop(0, '#2a4a6a');
+    hullGrad.addColorStop(0.5, '#1a3050');
+    hullGrad.addColorStop(1, '#0a1828');
+    ctx.fillStyle = hullGrad;
+
+    ctx.beginPath();
+    ctx.moveTo(0, 0);
+    ctx.lineTo(w, 0);
+    ctx.lineTo(w - 15, h);
+    ctx.lineTo(15, h);
+    ctx.closePath();
+    ctx.fill();
+
+    // Hull outline with glow
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    // Sections dividers
+    for (let i = 1; i < sections.length; i++) {
+        ctx.beginPath();
+        ctx.moveTo(i * secW, 0);
+        ctx.lineTo(i * secW, h);
+        ctx.strokeStyle = 'rgba(0, 212, 255, 0.15)';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+    }
+
+    // Deck details
+    ctx.strokeStyle = 'rgba(0, 212, 255, 0.4)';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(0, -2);
+    ctx.lineTo(w, -2);
+    ctx.stroke();
+
+    // Containers or cargo
+    const maxCap = Math.max(...sections.map(s => s.cap));
+    for (let i = 0; i < sections.length; i++) {
+        const sec = sections[i];
+        const fillRatio = sec.load / sec.cap;
+        const boxH = fillRatio * h * 0.7;
+        const boxW = secW * 0.7;
+        const boxX = i * secW + (secW - boxW) / 2;
+        const boxY = h - boxH - 2;
+
+        if (!sec.isBallast && fillRatio > 0.05) {
+            // Cargo containers
+            const colors = ['#ff6b6b', '#ffd93d', '#6bcf7f', '#4ecdc4', '#45b7d1', '#96ceb4'];
+            const rows = Math.min(3, Math.ceil(boxH / 12));
+            const cols = Math.min(3, Math.floor(boxW / 18));
+            for (let r = 0; r < rows; r++) {
+                for (let c = 0; c < cols; c++) {
+                    ctx.fillStyle = colors[(i + r + c) % colors.length];
+                    ctx.globalAlpha = 0.7;
+                    ctx.fillRect(boxX + c * 16 + 2, boxY + r * 12 + 2, 14, 10);
+                    ctx.globalAlpha = 1;
+                }
+            }
+        } else if (sec.isBallast && fillRatio > 0.05) {
+            // Ballast water
+            ctx.fillStyle = 'rgba(0, 100, 200, 0.5)';
+            ctx.fillRect(boxX, boxY, boxW, boxH);
+        }
+    }
+
+    // Ship name
+    ctx.fillStyle = 'rgba(255,255,255,0.8)';
+    ctx.font = 'bold 11px Orbitron, monospace';
+    ctx.textAlign = 'center';
+    ctx.fillText(ship.name, w / 2, -8);
+
+    ctx.restore();
+}
+
+function drawStressOverlay(ctx, ship, x, y, w, h) {
+    const results = STATE.lastResult.sections;
+    const secW = w / results.length;
+
+    for (let i = 0; i < results.length; i++) {
+        const r = results[i];
+        const ratio = r.stressMax / MAX_STRESS;
+        const alpha = Math.min(ratio * 0.6, 0.6);
+
+        let color;
+        if (r.status === 'ROJO') color = `rgba(255, 50, 50, ${alpha})`;
+        else if (r.status === 'AMARILLO') color = `rgba(255, 200, 0, ${alpha})`;
+        else color = `rgba(0, 255, 136, ${alpha * 0.5})`;
+
+        ctx.fillStyle = color;
+        ctx.fillRect(x + i * secW, y, secW, h);
+    }
+}
+
+function drawLoadIndicators(ctx, ship, x, y, w, h) {
+    const sections = ship.sections;
+    const secW = w / sections.length;
+
+    for (let i = 0; i < sections.length; i++) {
+        const sec = sections[i];
+        const ratio = sec.load / sec.cap;
+        const barH = ratio * 20;
+        const barX = x + i * secW + secW / 2 - 3;
+        const barY = y + h + 5;
+
+        // Background
+        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillRect(barX, barY, 6, 20);
+
+        // Fill
+        const color = sec.isBallast ? '#ff8c00' : (ratio > 0.8 ? '#ff4444' : '#00ddff');
+        ctx.fillStyle = color;
+        ctx.fillRect(barX, barY + 20 - barH, 6, barH);
+    }
+}
+
+// ═══════════════════════════════════════════════
+// UI INTERACTION
+// ═══════════════════════════════════════════════
+
+function createSliders() {
+    const ship = SHIP_PRESETS[STATE.shipType];
+    const cargoDiv = document.getElementById('cargoSliders');
+    const ballastDiv = document.getElementById('ballastSliders');
+
+    cargoDiv.innerHTML = '';
+    ballastDiv.innerHTML = '';
+
+    ship.sections.forEach((sec, i) => {
+        const div = document.createElement('div');
+        div.className = 'slider-group';
+        div.innerHTML = `
+            <div class="slider-label">
+                <span>${sec.name}</span>
+                <span>${(sec.load / 1000).toFixed(0)} kN</span>
+            </div>
+            <div class="slider-container" data-section="${i}" data-type="${sec.isBallast ? 'ballast' : 'cargo'}">
+                <div class="slider-fill ${sec.isBallast ? 'ballast' : 'cargo'}" style="width: ${(sec.load / sec.cap) * 100}%"></div>
+                <div class="slider-thumb" style="left: ${(sec.load / sec.cap) * 100}%"></div>
+            </div>
+        `;
+
+        if (sec.isBallast) ballastDiv.appendChild(div);
+        else cargoDiv.appendChild(div);
+    });
+
+    // Add slider interaction
+    document.querySelectorAll('.slider-container').forEach(container => {
+        let isDragging = false;
+        const updateSlider = (e) => {
+            const rect = container.getBoundingClientRect();
+            const pct = Math.max(0, Math.min(1, (e.clientX - rect.left) / rect.width));
+            const sectionIdx = parseInt(container.dataset.section);
+            const ship = SHIP_PRESETS[STATE.shipType];
+            const sec = ship.sections[sectionIdx];
+            sec.load = sec.cap * pct;
+            createSliders();
+        };
+
+        container.addEventListener('mousedown', (e) => { isDragging = true; updateSlider(e); });
+        container.addEventListener('mousemove', (e) => { if (isDragging) updateSlider(e); });
+        container.addEventListener('mouseup', () => { isDragging = false; });
+        container.addEventListener('mouseleave', () => { isDragging = false; });
+    });
+}
+
+function selectShip(type) {
+    STATE.shipType = type;
+    STATE.simulationRun = false;
+    document.querySelectorAll('.ship-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    createSliders();
+}
+
+function setSeaState(val) {
+    STATE.seaState = parseInt(val);
+    document.getElementById('seaStateValue').textContent = val;
+    document.getElementById('seaStateDesc').textContent = SEA_STATES[val].desc;
+}
+
+function setMode(mode) {
+    STATE.mode = mode;
+    document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+}
+
+function runSimulation() {
+    const ship = SHIP_PRESETS[STATE.shipType];
+    STATE.lastResult = computeSimulation(ship);
+    STATE.simulationRun = true;
+
+    // Update metrics
+    const r = STATE.lastResult;
+    document.getElementById('maxStress').textContent = r.maxStress.toFixed(1) + ' MPa';
+    document.getElementById('maxStress').className = 'metric-value ' + (r.maxStress > MAX_STRESS ? 'red' : r.maxStress > MAX_STRESS * 0.75 ? 'yellow' : 'green');
+    document.getElementById('maxMoment').textContent = (r.maxMoment / 1e6).toFixed(1) + ' MN·m';
+    document.getElementById('maxShear').textContent = (r.maxShear / 1000).toFixed(0) + ' kN';
+    document.getElementById('safetyFactor').textContent = (STEEL_YIELD / r.maxStress).toFixed(2);
+    document.getElementById('gmDisplay').textContent = r.gm.toFixed(3) + ' m';
+
+    // Update status
+    const dot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    dot.className = 'status-dot ' + (r.status === 'VERDE' ? 'green' : r.status === 'AMARILLO' ? 'yellow' : 'red');
+    statusText.textContent = r.status === 'VERDE' ? 'SYSTEMS OK' : r.status === 'AMARILLO' ? 'CAUTION' : 'DANGER';
+    document.getElementById('gmDisplay').style.color = r.gm >= GM_GREEN ? 'var(--green)' : r.gm >= GM_YELLOW ? 'var(--yellow)' : 'var(--red)';
+
+    // Show alerts
+    const alertContainer = document.getElementById('alertContainer');
+    alertContainer.innerHTML = '';
+    if (r.warnings.length === 0) {
+        const alert = document.createElement('div');
+        alert.className = 'alert alert-green';
+        alert.textContent = '✅ All systems within safe limits';
+        alertContainer.appendChild(alert);
+    } else {
+        r.warnings.forEach(w => {
+            const alert = document.createElement('div');
+            alert.className = 'alert ' + (r.status === 'ROJO' ? 'alert-red' : 'alert-yellow');
+            alert.textContent = (r.status === 'ROJO' ? '🔴 ' : '🟡 ') + w;
+            alertContainer.appendChild(alert);
+        });
+    }
+}
+
+function resetLoads() {
+    const ship = SHIP_PRESETS[STATE.shipType];
+    ship.sections.forEach(sec => {
+        sec.load = sec.isBallast ? sec.cap * 0.3 : sec.cap * 0.6;
+    });
+    STATE.simulationRun = false;
+    createSliders();
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+
+createSliders();
+render();
+</script>
+
+</body>
+</html>

@@ -1,35 +1,58 @@
 # 🚢 Ship Resistance Game
 
-**Educational Simulator of Ship Longitudinal Strength and Structural Failure Prevention**
+**Interactive Educational Game of Ship Longitudinal Strength and Structural Failure Prevention**
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
+[![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/HTML)
+[![Canvas](https://img.shields.io/badge/Canvas-000000?style=flat&logo=html5&logoColor=white)](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API)
+[![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat&logo=javascript&logoColor=black)](https://developer.mozilla.org/en-US/docs/Web/JavaScript)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/Version-1.0-green.svg)]()
-[![Status](https://img.shields.io/badge/Status-Prototype-orange.svg)]()
 
-> Educational simulation game to learn ship longitudinal strength, prevent yield/buckling failures, and manage stability during loading and unloading operations.
+> Interactive educational game where naval architecture students learn longitudinal ship strength by distributing cargo and ballast — with real-time physics, traffic-light alerts, and animated sea states.
 
 ---
 
 ## 📖 Description
 
-**Ship Resistance Game** is an educational simulation game about ship longitudinal strength and yield/buckling failure prevention during loading and unloading operations.
+**Ship Resistance Game** is a fully interactive, visually rich HTML5/Canvas game that teaches ship longitudinal strength and structural failure prevention during loading and unloading operations.
 
 The player takes on the role of a chief naval engineer and must:
-- Properly distribute cargo between holds
+- Properly distribute cargo between holds using drag-and-drop sliders
 - Adjust ballast to maintain stability
 - Keep structural stresses within safe limits
 - Navigate in different sea states without compromising hull integrity
+- Learn from real historical maritime disasters (MV Kurdistan, SS Edmund Fitzgerald, MV Prestige)
 
 ### Key Features
 
-- ✅ **Dynamic calculation** of shear force V(x) and bending moment M(x)
-- ✅ **Bending stresses** σ = M·y/I_z at deck and keel
-- ✅ **Traffic light alert system** (Green/Yellow/Red)
-- ✅ **Transverse stability** with GM calculation
-- ✅ **Sea states** with dynamic moment amplification
-- ✅ **Graphical visualization** of stress diagrams
-- ✅ **Game modes**: Tutorial, Realistic Simulator, Historical Cases
+- 🎮 **Interactive gameplay** — drag sliders to load/unload, run simulations, see results in real time
+- 🌊 **Animated sea** — waves get rougher with higher sea states, ship rocks with the swell
+- 📊 **Real-time metrics** — max stress, bending moment, shear force, safety factor, GM
+- 🚦 **Traffic light alerts** — sections glow green/yellow/red based on stress levels
+- 💥 **Visual feedback** — containers, ballast water, stress zones all rendered on the ship
+- 📚 **Historical cases** — rebuild the conditions that caused real maritime accidents
+- 🎯 **Challenge mode** — keep all sections green in storm conditions
+- 💻 **No installation needed** — runs in any modern browser
+
+---
+
+## 🚀 Quick Start
+
+**Play now:**
+
+```bash
+# Open in browser
+open game.html        # macOS
+start game.html       # Windows
+xdg-open game.html    # Linux
+```
+
+Or serve locally:
+
+```bash
+python -m http.server 8000
+# Open http://localhost:8000/game.html
+```
 
 ---
 

@@ -1,7 +1,7 @@
-# Project dependencies
+# Project dependencies (for legacy CLI and analysis)
 matplotlib>=3.5.0
 numpy>=1.21.0
-pandas>=1.5.0
-plotly>=5.10.0
 pytest>=7.0.0
-streamlit>=1.20.0
+
+# Note: The main game (game.html) runs entirely in the browser — no backend needed.
+# To play locally, simply open game.html in any modern browser.
