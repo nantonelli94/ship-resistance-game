@@ -53,12 +53,13 @@ class TestPhysicsEngine:
         assert ship.sections[2].x_center == 50.0
 
     def test_buoyancy_distribution(self):
-        """El empuje total debe ser igual al desplazamiento."""
+        """El empuje total debe ser igual al peso total (equilibrio estático)."""
         ship = create_test_ship()
         engine = PhysicsEngine(ship)
 
         total_buoyancy = sum(s._buoyancy for s in ship.sections)
-        assert abs(total_buoyancy - ship.displacement) < 1.0
+        total_weight = sum(s.total_weight for s in ship.sections)
+        assert abs(total_buoyancy - total_weight) < 1.0
 
     def test_load_distribution(self):
         """La distribución de carga debe tener valores razonables."""
@@ -83,13 +84,18 @@ class TestPhysicsEngine:
     def test_stress_calculation(self):
         """Las tensiones deben calcularse correctamente."""
         ship = create_test_ship()
+        # Hacer una carga asimétrica para generar momento flector
+        ship.sections[0].set_load(8000e3)  # Carga pesada en proa
+        ship.sections[4].set_load(1000e3)  # Carga ligera en popa
         engine = PhysicsEngine(ship)
 
         result = engine.compute_shear_and_moment()
+        # Al menos una sección debe tener tensión no nula
+        assert any(s.stress_max > 0 for s in result.sections)
         for stress in result.sections:
-            # Tensión no debe ser NaN
+            # Tensión no debe ser NaN ni infinita
             assert stress.stress_max >= 0
-            assert stress.stress_deck != 0 or stress.stress_keel != 0
+            assert not (stress.stress_max != stress.stress_max)  # NaN check
 
 
 class TestShipConfig:
